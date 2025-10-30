@@ -416,6 +416,7 @@ controller:
     - job-dsl:latest
     - credentials-binding:latest
     - ws-cleanup:latest
+    - slack:latest
 
   # If set to false, Jenkins will download the minimum required version of all dependencies.
   # -- Download the minimum required version or latest version of all dependencies
@@ -475,7 +476,9 @@ controller:
   existingSecret:
 
   # -- List of additional existing secrets to mount
-  additionalExistingSecrets: []
+  additionalExistingSecrets:
+    - name: jenkins-slack-secret
+      keyName: slack-token
   # ref: https://github.com/jenkinsci/configuration-as-code-plugin/blob/master/docs/features/secrets.adoc#kubernetes-secrets
   # additionalExistingSecrets:
   #  - name: secret-name-1
@@ -527,8 +530,56 @@ controller:
      welcome-message: |
        jenkins:
          systemMessage: Welcome to our CI\CD server. This Jenkins is configured and managed 'as code'.
+     global-libraries: |
+       unclassified:
+         globalLibraries:
+           libraries:
+           - defaultVersion: "main"
+             name: "shared-library"
+             retriever:
+               modernSCM:
+                 scm:
+                   git:
+                     id: "6a0b958c-e5be-4a26-b20f-371b82c4ef61"
+                     remote: "https://github.com/ogkatzu/jenkins-workshop-shared-library.git"
+                     traits:
+                     - gitBranchDiscovery
+     slack-config: |
+       credentials:
+         system:
+           domainCredentials:
+           - credentials:
+             - string:
+                 scope: GLOBAL
+                 id: "slack-token"
+                 secret: "${jenkins-slack-secret-slack-token}"
+                 description: "Slack Bot Token"
+       unclassified:
+         slackNotifier:
+           teamDomain: "develeapbootcamp25"
+           tokenCredentialId: "slack-token"
+           botUser: true
      job-dsl-pipeline: |
        jobs:
+         - script: >
+             pipelineJob('my-pipeline') {
+               description('Pipeline job pulling Jenkinsfile from Git repository')
+               definition {
+                 cpsScm {
+                   scm {
+                     git {
+                       remote {
+                         url('https://github.com/ogkatzu/jenkins-workshop.git')
+                       }
+                       branches('*/main')
+                       extensions {}
+                     }
+                   }
+                   scriptPath('Jenkinsfile')
+                   lightweight(true)
+                 }
+               }
+             }
          - script: >
              folder('job-dsl')
          - script: >

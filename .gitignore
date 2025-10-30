@@ -1,0 +1,21 @@
+# Sensitive values files
+values-secrets.yaml
+*-secrets.yaml
+
+# Unencrypted secret files
+*-secret.yaml
+!*-sealed-secret.yaml
+
+# Kubernetes secret manifests (unencrypted)
+jenkins-slack-secret.yaml
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
