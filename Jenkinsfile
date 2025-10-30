@@ -29,7 +29,7 @@ pipeline {
             steps {
                 container('maven') {
                     script {
-                        withHealthCheck(url: 'https://www.google.com') {
+                        withHealthCheck(url: 'https://google.com') {
                             sh "mvn --version"
                         }
                     }
