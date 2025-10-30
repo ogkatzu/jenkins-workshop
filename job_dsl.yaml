@@ -1,0 +1,33 @@
+jenkins:
+  controller:
+    JCasC:
+      configScripts:
+        job-dsl-pipeline: |
+          jobs:
+            - script: >
+                folder('job-dsl')
+            - script: >
+                pipelineJob('job-dsl/docker-run') {
+                  definition {
+                    cps {
+                      script("""\
+                        pipeline {
+                          agent any
+                          stages {
+                            stage ('Run') {
+                              steps {
+                                container('dind') {
+                                  // Run Docker CLI commands inside the "dind" container
+                                  sh '''
+                                    docker --version
+                                    docker compose version
+                                    docker run --rm docker.io/library/hello-world
+                                  '''
+                                }
+                              }
+                            }
+                          }
+                        }""".stripIndent())
+                    }
+                  }
+                }
