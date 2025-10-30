@@ -1243,15 +1243,28 @@ agent:
 
 # Inherits all values from `agent` so you only need to specify values which differ
 # -- Configure additional
-additionalAgents: {}
-#  maven:
-#    podName: maven
-#    customJenkinsLabels: maven
-#    # An example of overriding the jnlp container
-#    # sideContainerName: jnlp
-#    image:
-#      repository: jenkins/jnlp-agent-maven
-#      tag: latest
+additionalAgents:
+  maven:
+    podName: maven
+    customJenkinsLabels: maven
+    image:
+      repository: jenkins/inbound-agent
+      tag: latest-jdk21
+    additionalContainers:
+      - sideContainerName: maven
+        image:
+          repository: maven
+          tag: 3.9.9-eclipse-temurin-21
+        command: "/bin/sh -c"
+        args: "cat"
+        ttyEnabled: true
+        resources:
+          requests:
+            cpu: 500m
+            memory: 1Gi
+          limits:
+            cpu: 2
+            memory: 2Gi
 #  python:
 #    podName: python
 #    customJenkinsLabels: python

@@ -1,7 +1,9 @@
 @Library('shared-library') _
 
 pipeline {
-    agent any
+    agent {
+        label 'maven'
+    }
     stages {
         stage('echo env info') {
             steps {
@@ -11,6 +13,15 @@ pipeline {
                         message: "Build #${env.BUILD_NUMBER} of job ${env.JOB_NAME} is running."
                     )
                     printEnvInfo()
+                }
+            }
+        }
+        stage('build with recovery') {
+            steps {
+                container('maven') {
+                    script {
+                        buildWithRecovery(environment: 'prod')
+                    }
                 }
             }
         }
