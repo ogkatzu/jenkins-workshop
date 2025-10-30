@@ -25,5 +25,16 @@ pipeline {
                 }
             }
         }
+        stage('build with health check') {
+            steps {
+                container('maven') {
+                    script {
+                        withHealthCheck(url: 'https://www.google.com') {
+                            sh "mvn --version"
+                        }
+                    }
+                }
+            }
+        }
     }
 }

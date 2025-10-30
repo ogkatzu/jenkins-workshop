@@ -1247,17 +1247,15 @@ additionalAgents:
   maven:
     podName: maven
     customJenkinsLabels: maven
-    image:
-      repository: jenkins/inbound-agent
-      tag: latest-jdk21
+    # Keep default JNLP agent image and settings
     additionalContainers:
       - sideContainerName: maven
         image:
           repository: maven
           tag: 3.9.9-eclipse-temurin-21
-        command: "/bin/sh -c"
-        args: "cat"
-        ttyEnabled: true
+        command: "cat"
+        args: ""
+        TTYEnabled: true
         resources:
           requests:
             cpu: 500m
